@@ -4,10 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vaura Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script type="module">
     // Firebase Modular Imports
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, 
+    import { getAuth, onAuthStateChanged, signInWithPopup, 
+             GoogleAuthProvider, GithubAuthProvider,
              signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } 
              from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -15,7 +17,7 @@
       apiKey: "AIzaSyAW4gJsNCJhMFmmkHIOk2-aWbvEsqcFvGg",
       authDomain: "vaura-app.firebaseapp.com",
       projectId: "vaura-app",
-      storageBucket: "vaura-app.firebasestorage.app",
+      storageBucket: "vaura-app.appspot.com",
       messagingSenderId: "293235650565",
       appId: "1:293235650565:web:347f15d4727cda1897ec6c",
       measurementId: "G-H559D7SFMS"
@@ -23,13 +25,15 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+    const googleProvider = new GoogleAuthProvider();
+    const githubProvider = new GithubAuthProvider();
 
     const choiceView = document.getElementById("auth-choice");
     const emailView = document.getElementById("email-login");
     const dashView = document.getElementById("dashboard");
     const userName = document.getElementById("user-name");
     const userEmail = document.getElementById("user-email");
+    const userAvatar = document.getElementById("user-avatar");
 
     function show(el) {
       [choiceView, emailView, dashView].forEach(v => v.style.display = 'none');
@@ -37,7 +41,13 @@
     }
 
     window.googleLogin = () => {
-      signInWithPopup(auth, provider)
+      signInWithPopup(auth, googleProvider)
+        .then(res => updateDashboard(res.user))
+        .catch(err => alert(err.message));
+    };
+
+    window.githubLogin = () => {
+      signInWithPopup(auth, githubProvider)
         .then(res => updateDashboard(res.user))
         .catch(err => alert(err.message));
     };
@@ -69,6 +79,12 @@
     function updateDashboard(user) {
       userName.textContent = user.displayName || "Anonymous";
       userEmail.textContent = user.email;
+      if (user.photoURL) {
+        userAvatar.src = user.photoURL;
+        userAvatar.style.display = 'block';
+      } else {
+        userAvatar.style.display = 'none';
+      }
       show(dashView);
     }
 
@@ -79,80 +95,325 @@
   </script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #FF4D79;
+      --secondary: #6C5CE7;
+      --dark: #2D3436;
+      --light: #F5F6FA;
+      --bg: #12121c;
+      --card-bg: #1f1f2e;
+      --text: #F5F6FA;
+      --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+    
     body {
-      font-family: system-ui, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: radial-gradient(circle at top, #12121c, #0a0a12);
-      color: #fff;
+      background: var(--bg);
+      color: var(--text);
+      background-image: radial-gradient(circle at 25% 25%, rgba(108, 92, 231, 0.1) 0%, transparent 50%),
+                      radial-gradient(circle at 75% 75%, rgba(255, 77, 121, 0.1) 0%, transparent 50%);
     }
+    
     .card {
-      background: #1f1f2e;
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
-      width: 320px;
+      background: var(--card-bg);
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      width: 380px;
+      max-width: 95%;
       text-align: center;
       display: none;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
     }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+      z-index: -1;
+    }
+    
+    h2 {
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: white;
+    }
+    
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin: 0 auto 1rem;
+      border: 3px solid var(--primary);
+      display: none;
+    }
+    
     input {
       width: 100%;
-      padding: 0.8rem;
-      margin: 0.5rem 0;
-      border-radius: 8px;
+      padding: 0.9rem 1.2rem;
+      margin: 0.7rem 0;
+      border-radius: 10px;
       border: none;
-      background: #2e2e3e;
+      background: rgba(255, 255, 255, 0.1);
       color: white;
+      font-size: 0.95rem;
+      transition: var(--transition);
+      backdrop-filter: blur(5px);
     }
+    
+    input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+    
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
     .btn {
       width: 100%;
-      padding: 0.8rem;
-      margin-top: 0.6rem;
+      padding: 0.9rem;
+      margin: 0.7rem 0;
       border: none;
-      background: #4a90e2;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
-      font-weight: bold;
-      border-radius: 8px;
+      font-weight: 600;
+      border-radius: 10px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: var(--transition);
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      position: relative;
+      overflow: hidden;
     }
-    .btn:hover { background: #357ab8; }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+    }
+    
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+    
+    .btn:hover::after {
+      left: 100%;
+    }
+    
+    .btn-google {
+      background: #4285F4;
+    }
+    
+    .btn-github {
+      background: #333;
+    }
+    
+    .btn-email {
+      background: transparent;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-email:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .btn-logout {
+      background: transparent;
+      border: 2px solid var(--primary);
+    }
+    
+    .btn-logout:hover {
+      background: var(--primary);
+    }
+    
     .switch {
-      margin-top: 1rem;
-      color: #aaa;
+      margin-top: 1.2rem;
+      color: rgba(255, 255, 255, 0.7);
       cursor: pointer;
       font-size: 0.9rem;
+      transition: var(--transition);
+      display: inline-block;
+    }
+    
+    .switch:hover {
+      color: var(--primary);
+      transform: translateX(-3px);
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 1.5rem 0;
+      color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .divider span {
+      padding: 0 1rem;
+      font-size: 0.8rem;
+    }
+    
+    .user-info {
+      margin-bottom: 2rem;
+    }
+    
+    .user-info h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.3rem;
+    }
+    
+    .user-info p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.95rem;
+    }
+    
+    .floating-shapes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: -1;
+      pointer-events: none;
+    }
+    
+    .shape {
+      position: absolute;
+      opacity: 0.1;
+      animation: float 15s infinite linear;
+      border-radius: 50%;
+      filter: blur(20px);
+    }
+    
+    .shape:nth-child(1) {
+      width: 200px;
+      height: 200px;
+      background: var(--primary);
+      top: 20%;
+      left: 10%;
+      animation-duration: 20s;
+    }
+    
+    .shape:nth-child(2) {
+      width: 300px;
+      height: 300px;
+      background: var(--secondary);
+      top: 60%;
+      left: 80%;
+      animation-duration: 25s;
+    }
+    
+    .shape:nth-child(3) {
+      width: 150px;
+      height: 150px;
+      background: var(--primary);
+      top: 80%;
+      left: 20%;
+      animation-duration: 18s;
+    }
+    
+    @keyframes float {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(10px, 10px) rotate(5deg); }
+      50% { transform: translate(20px, -10px) rotate(-5deg); }
+      75% { transform: translate(-10px, 15px) rotate(5deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .card {
+      animation: fadeIn 0.6s ease-out forwards;
     }
   </style>
 </head>
 <body>
+  <div class="floating-shapes">
+    <div class="shape"></div>
+    <div class="shape"></div>
+    <div class="shape"></div>
+  </div>
 
   <!-- Auth Options -->
   <div id="auth-choice" class="card">
-    <h2>Sign In</h2>
-    <button class="btn" onclick="googleLogin()">🔵 Sign in with Google</button>
-    <button class="btn" onclick="showEmailLogin()">✉️ Email Login</button>
+    <h2>Welcome to Vaura</h2>
+    <button class="btn btn-google" onclick="googleLogin()">
+      <i class="fab fa-google"></i> Continue with Google
+    </button>
+    <button class="btn btn-github" onclick="githubLogin()">
+      <i class="fab fa-github"></i> Continue with GitHub
+    </button>
+    <div class="divider"><span>OR</span></div>
+    <button class="btn btn-email" onclick="showEmailLogin()">
+      <i class="fas fa-envelope"></i> Continue with Email
+    </button>
   </div>
 
   <!-- Email Form -->
   <div id="email-login" class="card">
     <h2>Email Login</h2>
-    <input id="email" type="email" placeholder="Email" />
+    <input id="email" type="email" placeholder="Email Address" />
     <input id="password" type="password" placeholder="Password" />
-    <button class="btn" onclick="emailLogin()">Login</button>
-    <button class="btn" onclick="emailSignup()">Sign Up</button>
-    <div class="switch" onclick="showAuthChoice()">← Back</div>
+    <button class="btn" onclick="emailLogin()">
+      <i class="fas fa-sign-in-alt"></i> Sign In
+    </button>
+    <button class="btn" onclick="emailSignup()">
+      <i class="fas fa-user-plus"></i> Create Account
+    </button>
+    <div class="switch" onclick="showAuthChoice()">
+      <i class="fas fa-arrow-left"></i> Back to other options
+    </div>
   </div>
 
   <!-- Logged In -->
   <div id="dashboard" class="card">
-    <h2>Welcome, <span id="user-name">User</span></h2>
-    <p id="user-email"></p>
-    <button class="btn" onclick="logout()">Logout</button>
+    <img id="user-avatar" class="avatar" alt="User Avatar">
+    <div class="user-info">
+      <h3 id="user-name">User</h3>
+      <p id="user-email"></p>
+    </div>
+    <button class="btn btn-logout" onclick="logout()">
+      <i class="fas fa-sign-out-alt"></i> Sign Out
+    </button>
   </div>
-
 </body>
 </html>
