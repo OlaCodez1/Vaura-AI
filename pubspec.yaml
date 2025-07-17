@@ -14,15 +14,34 @@ dependencies:
   remixicon: 
   http: ^1.4.0
   path_provider: ^2.1.5
+<<<<<<< HEAD
   
+=======
+  url_launcher:
+  app_links: ^3.3.0
+  shared_preferences:
+
+>>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+<<<<<<< HEAD
+=======
+  flutter_launcher_icons: ^0.13.1
+>>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
 
 flutter:
   uses-material-design: true
   assets:
     - assets/onboarding_ai.svg
     - assets/onboarding_chat.svg
+<<<<<<< HEAD
     - assets/onboarding_security.svg
+=======
+    - assets/onboarding_security.svg
+
+flutter_icons:
+  android: true
+  image_path: "assets/icon.png"
+>>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
