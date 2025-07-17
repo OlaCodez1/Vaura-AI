@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vaura App Not Installed</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #FF4D79;
+      --secondary: #6C5CE7;
+      --bg: #121212;
+      --text: #F5F6FA;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .fallback {
+      max-width: 400px;
+      background: #1e1e1e;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .fallback i {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+
+    .fallback h2 {
+      margin-bottom: 0.8rem;
+      font-size: 1.5rem;
+    }
+
+    .fallback p {
+      opacity: 0.75;
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .fallback a {
+      display: inline-block;
+      padding: 0.8rem 1.2rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 10px;
+      transition: 0.3s ease;
+    }
+
+    .fallback a:hover {
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="fallback">
+    <i class="fas fa-mobile-alt"></i>
+    <h2>App Not Installed</h2>
+    <p>It looks like the Vaura app isn’t installed on this device.</p>
+    <a href="data:text/html;base64,PCFET0NUWVBFIGh0bWw+DQo8aHRtbCBsYW5nPSJlbiI+DQo8aGVhZD4NCiAgPG1ldGEgY2hhcnNldD0iVVRGLTgiPg0KICA8dGl0bGU+RG93bmxvYWQgVmF1cmEgQXBwPC90aXRsZT4NCjwvaGVhZD4NCjxib2R5IHN0eWxlPSJmb250LWZhbWlseTogc2Fucy1zZXJpZjsgdGV4dC1hbGlnbjogY2VudGVyOyBwYWRkaW5nLXRvcDogNXJlbTsgYmFja2dyb3VuZDogIzEyMTIxMjsgY29sb3I6IHdoaXRlOyI+DQogIDxoMT5Eb3dubG9hZCBWYXVyYSBBcHA8L2gxPg0KICA8cD5UaGlzIGFwcCBpcyBub3QgaW5zdGFsbGVkIG9uIHlvdXIgZGV2aWNlLiBDbGljayB0aGUgYnV0dG9uIGJlbG93IHRvIGRvd25sb2FkIGl0LjwvcD4NCiAgPGEgaHJlZj0iaHR0cHM6Ly92YXVyYS1hcHAud2ViLmFwcC9hcHAtcmVsZWFzZS5hcGsiIGRvd25sb2FkIHN0eWxlPSJkaXNwbGF5OiBpbmxpbmUtYmxvY2s7IG1hcmdpbi10b3A6IDJyZW07IHBhZGRpbmc6IDFyZW0gMnJlbTsgYmFja2dyb3VuZDogI0ZGNEQ3OTsgY29sb3I6IHdoaXRlOyBib3JkZXItcmFkaXVzOiA4cHg7IHRleHQtZGVjb3JhdGlvbjogbm9uZTsiPkRvd25sb2FkIEFQSzwvYT4NCjwvYm9keT4NCjwvaHRtbD4NCg==">Download the app</a>
+  </div>
+</body>
+</html>
