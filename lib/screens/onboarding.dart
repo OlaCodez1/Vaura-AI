@@ -55,11 +55,7 @@ class OnboardingScreenState extends State<OnboardingScreen>
     super.dispose();
   }
 
-<<<<<<< HEAD
-  void _onSkip() => Navigator.pushReplacementNamed(context, '/home');
-=======
   void _onSkip() => Navigator.pushReplacementNamed(context, '/auth');
->>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
 
   void _onNext() {
     if (_currentPage == _pages.length - 1) {
@@ -74,10 +70,7 @@ class OnboardingScreenState extends State<OnboardingScreen>
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-=======
     final isDark = Theme.of(context).brightness == Brightness.dark;
->>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
     return Scaffold(
       body: Stack(
         children: [
@@ -88,21 +81,13 @@ class OnboardingScreenState extends State<OnboardingScreen>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-<<<<<<< HEAD
-                  _pages[_currentPage].color.withAlpha(25),
-=======
                   _pages[_currentPage].color.withAlpha(isDark ? 50 : 25),
->>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
                   Colors.transparent,
                 ],
               ),
             ),
           ),
-<<<<<<< HEAD
-          _buildFloatingElements(),
-=======
           _buildFloatingElements(isDark),
->>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
           PageView.builder(
             controller: _pageController,
             itemCount: _pages.length,
@@ -115,16 +100,12 @@ class OnboardingScreenState extends State<OnboardingScreen>
             right: 24,
             child: TextButton(
               onPressed: _onSkip,
-<<<<<<< HEAD
-              child: const Text('Skip'),
-=======
               child: Text(
                 'Skip',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
->>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
             ),
           ),
           Positioned(
@@ -143,11 +124,7 @@ class OnboardingScreenState extends State<OnboardingScreen>
                   decoration: BoxDecoration(
                     color: _currentPage == index
                         ? _pages[_currentPage].color
-<<<<<<< HEAD
-                        : Colors.grey.withAlpha(128),
-=======
                         : Theme.of(context).colorScheme.onSurface.withAlpha(77),
->>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
@@ -181,11 +158,7 @@ class OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-<<<<<<< HEAD
-  Widget _buildFloatingElements() {
-=======
   Widget _buildFloatingElements(bool isDark) {
->>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
     return Stack(
       children: [
         Positioned(
@@ -196,11 +169,7 @@ class OnboardingScreenState extends State<OnboardingScreen>
             height: 200,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-<<<<<<< HEAD
-              color: _pages[_currentPage].color.withAlpha(12),
-=======
               color: _pages[_currentPage].color.withAlpha(isDark ? 20 : 12),
->>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
             ),
           ),
         ),
@@ -212,11 +181,7 @@ class OnboardingScreenState extends State<OnboardingScreen>
             height: 120,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-<<<<<<< HEAD
-              color: _pages[_currentPage].color.withAlpha(7),
-=======
               color: _pages[_currentPage].color.withAlpha(isDark ? 10 : 7),
->>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
             ),
           ),
         ),
@@ -232,10 +197,7 @@ class OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-=======
     final colorScheme = Theme.of(context).colorScheme;
->>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
     return Padding(
       padding: const EdgeInsets.all(40),
       child: Column(
@@ -254,20 +216,6 @@ class OnboardingPage extends StatelessWidget {
               color: item.color,
             ),
           ),
-<<<<<<< HEAD
-          ShaderMask(
-            shaderCallback: (bounds) => LinearGradient(
-              colors: [item.color, item.color.withAlpha(178)],
-            ).createShader(bounds),
-            child: Text(
-              item.title,
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                height: 1.2,
-              ),
-            ),
-=======
           Text(
             item.title,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -275,23 +223,14 @@ class OnboardingPage extends StatelessWidget {
                   color: colorScheme.onSurface,
                 ),
             textAlign: TextAlign.center,
->>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
           ),
           const SizedBox(height: 20),
           Text(
             item.description,
             textAlign: TextAlign.center,
-<<<<<<< HEAD
-            style: TextStyle(
-              fontSize: 16,
-              color:
-                  Theme.of(context).textTheme.bodyLarge?.color?.withAlpha(178),
-            ),
-=======
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: colorScheme.onSurface.withAlpha(178),
                 ),
->>>>>>> ≡ƒöÉ Added .gitignore, release signing setup, deep link config
           ),
           const SizedBox(height: 40),
           Expanded(
