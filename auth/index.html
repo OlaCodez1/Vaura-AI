@@ -23,20 +23,47 @@
       measurementId: "G-H559D7SFMS"
     };
 
+    // Check if current URL is authorized
+    const isAuthorizedURL = () => {
+      const allowedDomains = [
+        /^https:\/\/olacodez1\.github\.io\/.*/,
+        /^https:\/\/olacodez\.rf\.gd\/.*/,
+        /^https:\/\/vaura-app\.firebaseapp\.com\/.*/,
+        /^https:\/\/vaura-app\.web\.app\/.*/,
+        /^http:\/\/localhost(:[0-9]+)?\/.*/
+      ];
+      
+      const currentURL = window.location.href;
+      return allowedDomains.some(regex => regex.test(currentURL));
+    };
+
+    if (!isAuthorizedURL()) {
+      document.body.innerHTML = `
+        <div class="unauthorized-container">
+          <h1>Unauthorized Access</h1>
+          <p>This login form can only be accessed from authorized domains.</p>
+          <p>Please contact the administrator if you believe this is an error.</p>
+        </div>
+      `;
+      throw new Error("Unauthorized domain");
+    }
+
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const googleProvider = new GoogleAuthProvider();
     const githubProvider = new GithubAuthProvider();
 
     const choiceView = document.getElementById("auth-choice");
-    const emailView = document.getElementById("email-login");
+    const emailLoginView = document.getElementById("email-login");
+    const emailSignupView = document.getElementById("email-signup");
     const dashView = document.getElementById("dashboard");
     const userName = document.getElementById("user-name");
     const userEmail = document.getElementById("user-email");
     const userAvatar = document.getElementById("user-avatar");
+    const themeToggle = document.getElementById("theme-toggle");
 
     function show(el) {
-      [choiceView, emailView, dashView].forEach(v => v.style.display = 'none');
+      [choiceView, emailLoginView, emailSignupView, dashView].forEach(v => v.style.display = 'none');
       el.style.display = 'block';
     }
 
@@ -53,16 +80,16 @@
     };
 
     window.emailLogin = () => {
-      const email = document.getElementById("email").value;
-      const pass = document.getElementById("password").value;
+      const email = document.getElementById("login-email").value;
+      const pass = document.getElementById("login-password").value;
       signInWithEmailAndPassword(auth, email, pass)
         .then(res => updateDashboard(res.user))
         .catch(err => alert(err.message));
     };
 
     window.emailSignup = () => {
-      const email = document.getElementById("email").value;
-      const pass = document.getElementById("password").value;
+      const email = document.getElementById("signup-email").value;
+      const pass = document.getElementById("signup-password").value;
       createUserWithEmailAndPassword(auth, email, pass)
         .then(res => updateDashboard(res.user))
         .catch(err => alert(err.message));
@@ -73,7 +100,8 @@
       show(choiceView);
     };
 
-    window.showEmailLogin = () => show(emailView);
+    window.showEmailLogin = () => show(emailLoginView);
+    window.showEmailSignup = () => show(emailSignupView);
     window.showAuthChoice = () => show(choiceView);
 
     function updateDashboard(user) {
@@ -88,6 +116,22 @@
       show(dashView);
     }
 
+    // Theme management
+    function setTheme(isDark) {
+      document.body.className = isDark ? 'dark-mode' : 'light-mode';
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const isDark = !document.body.classList.contains('dark-mode');
+      setTheme(isDark);
+    });
+
+    // Initialize theme
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme === 'dark');
+
     onAuthStateChanged(auth, user => {
       if (user) updateDashboard(user);
       else show(choiceView);
@@ -100,10 +144,20 @@
       --secondary: #6C5CE7;
       --dark: #2D3436;
       --light: #F5F6FA;
-      --bg: #12121c;
-      --card-bg: #1f1f2e;
-      --text: #F5F6FA;
+      --text: #2D3436;
+      --card-bg: white;
+      --bg: #F5F6FA;
       --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .dark-mode {
+      --primary: #FF4D79;
+      --secondary: #8A7CFF;
+      --dark: #121212;
+      --light: #1E1E1E;
+      --text: #F5F6FA;
+      --card-bg: #1E1E1E;
+      --bg: #121212;
     }
 
     * { 
@@ -120,6 +174,7 @@
       min-height: 100vh;
       background: var(--bg);
       color: var(--text);
+      transition: background-color 0.5s ease, color 0.5s ease;
       background-image: radial-gradient(circle at 25% 25%, rgba(108, 92, 231, 0.1) 0%, transparent 50%),
                       radial-gradient(circle at 75% 75%, rgba(255, 77, 121, 0.1) 0%, transparent 50%);
     }
@@ -128,7 +183,7 @@
       background: var(--card-bg);
       padding: 2.5rem;
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       width: 380px;
       max-width: 95%;
       text-align: center;
@@ -136,6 +191,7 @@
       position: relative;
       overflow: hidden;
       z-index: 1;
+      transition: all 0.5s ease;
     }
     
     .card::before {
@@ -153,7 +209,7 @@
       margin-bottom: 1.5rem;
       font-size: 1.8rem;
       font-weight: 700;
-      color: white;
+      color: var(--text);
     }
     
     .avatar {
@@ -172,20 +228,31 @@
       margin: 0.7rem 0;
       border-radius: 10px;
       border: none;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
+      background: rgba(0, 0, 0, 0.05);
+      color: var(--text);
       font-size: 0.95rem;
       transition: var(--transition);
-      backdrop-filter: blur(5px);
+    }
+    
+    .dark-mode input {
+      background: rgba(255, 255, 255, 0.1);
     }
     
     input:focus {
       outline: none;
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.1);
       box-shadow: 0 0 0 2px var(--primary);
     }
     
+    .dark-mode input:focus {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    
     input::placeholder {
+      color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .dark-mode input::placeholder {
       color: rgba(255, 255, 255, 0.6);
     }
     
@@ -239,25 +306,30 @@
     
     .btn-email {
       background: transparent;
-      border: 2px solid rgba(255, 255, 255, 0.2);
+      border: 2px solid var(--primary);
+      color: var(--primary);
     }
     
     .btn-email:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: var(--primary);
+      color: white;
     }
     
     .btn-logout {
       background: transparent;
       border: 2px solid var(--primary);
+      color: var(--primary);
     }
     
     .btn-logout:hover {
       background: var(--primary);
+      color: white;
     }
     
     .switch {
       margin-top: 1.2rem;
-      color: rgba(255, 255, 255, 0.7);
+      color: var(--text);
+      opacity: 0.7;
       cursor: pointer;
       font-size: 0.9rem;
       transition: var(--transition);
@@ -266,6 +338,7 @@
     
     .switch:hover {
       color: var(--primary);
+      opacity: 1;
       transform: translateX(-3px);
     }
     
@@ -273,6 +346,10 @@
       display: flex;
       align-items: center;
       margin: 1.5rem 0;
+      color: rgba(0, 0, 0, 0.3);
+    }
+    
+    .dark-mode .divider {
       color: rgba(255, 255, 255, 0.3);
     }
     
@@ -280,6 +357,11 @@
       content: '';
       flex: 1;
       height: 1px;
+      background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .dark-mode .divider::before,
+    .dark-mode .divider::after {
       background: rgba(255, 255, 255, 0.1);
     }
     
@@ -295,10 +377,12 @@
     .user-info h3 {
       font-size: 1.3rem;
       margin-bottom: 0.3rem;
+      color: var(--text);
     }
     
     .user-info p {
-      color: rgba(255, 255, 255, 0.7);
+      color: var(--text);
+      opacity: 0.7;
       font-size: 0.95rem;
     }
     
@@ -364,9 +448,48 @@
     .card {
       animation: fadeIn 0.6s ease-out forwards;
     }
+    
+    .theme-toggle {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: var(--transition);
+      z-index: 10;
+    }
+    
+    .theme-toggle:hover {
+      color: var(--primary);
+      transform: scale(1.1);
+    }
+    
+    .unauthorized-container {
+      text-align: center;
+      padding: 2rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .unauthorized-container h1 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .unauthorized-container p {
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
   </style>
 </head>
-<body>
+<body class="dark-mode">
+  <button id="theme-toggle" class="theme-toggle">
+    <i class="fas fa-sun"></i>
+  </button>
+
   <div class="floating-shapes">
     <div class="shape"></div>
     <div class="shape"></div>
@@ -384,23 +507,36 @@
     </button>
     <div class="divider"><span>OR</span></div>
     <button class="btn btn-email" onclick="showEmailLogin()">
-      <i class="fas fa-envelope"></i> Continue with Email
+      <i class="fas fa-sign-in-alt"></i> Sign In with Email
     </button>
+    <div class="switch" onclick="showEmailSignup()">
+      Don't have an account? <span style="color: var(--primary);">Sign up</span>
+    </div>
   </div>
 
-  <!-- Email Form -->
+  <!-- Email Login Form -->
   <div id="email-login" class="card">
-    <h2>Email Login</h2>
-    <input id="email" type="email" placeholder="Email Address" />
-    <input id="password" type="password" placeholder="Password" />
+    <h2>Sign In</h2>
+    <input id="login-email" type="email" placeholder="Email Address" />
+    <input id="login-password" type="password" placeholder="Password" />
     <button class="btn" onclick="emailLogin()">
       <i class="fas fa-sign-in-alt"></i> Sign In
     </button>
+    <div class="switch" onclick="showAuthChoice()">
+      <i class="fas fa-arrow-left"></i> Back to all options
+    </div>
+  </div>
+
+  <!-- Email Signup Form -->
+  <div id="email-signup" class="card">
+    <h2>Create Account</h2>
+    <input id="signup-email" type="email" placeholder="Email Address" />
+    <input id="signup-password" type="password" placeholder="Password" />
     <button class="btn" onclick="emailSignup()">
       <i class="fas fa-user-plus"></i> Create Account
     </button>
     <div class="switch" onclick="showAuthChoice()">
-      <i class="fas fa-arrow-left"></i> Back to other options
+      <i class="fas fa-arrow-left"></i> Back to all options
     </div>
   </div>
 
