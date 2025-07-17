@@ -126,9 +126,26 @@
     setTheme(savedTheme === 'dark');
 
     onAuthStateChanged(auth, user => {
-      if (user) updateDashboard(user);
-      else show(choiceView);
-    });
+  if (user) {
+    // User is signed in
+    const deepLink = `vaura://login?uid=${encodeURIComponent(user.uid)}` +
+                     `&email=${encodeURIComponent(user.email || '')}` +
+                     `&name=${encodeURIComponent(user.displayName || '')}` +
+                     `&photo=${encodeURIComponent(user.photoURL || '')}`;
+    
+    // Try to redirect immediately
+    window.location.href = deepLink;
+    
+    // Fallback in case the deep link fails
+    setTimeout(() => {
+      // Show dashboard if deep link didn't work
+      updateDashboard(user);
+    }, 500);
+  } else {
+    // No user is signed in
+    show(choiceView);
+  }
+});
   </script>
   <style>
     /* Base colors */
