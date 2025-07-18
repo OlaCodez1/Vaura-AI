@@ -31,6 +31,8 @@ flutter:
     - assets/onboarding_chat.svg
     - assets/onboarding_security.svg
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
-  image_path: "assets/icon.png"
+  ios: true
+  image_path: "assets/icon.png"  # Use your high-res icon (1024×1024 ideally)
+  remove_alpha_ios: true         # Removes transparency (required by App Store)

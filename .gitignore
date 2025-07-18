@@ -1,0 +1,42 @@
+# === Sensitive Files & Secrets ===
+
+# Env files (used by dotenv packages)
+.env
+.env.*
+.envrc
+
+# Firebase config (generated or manually added)
+lib/firebase_options.dart
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Keystore and key-related files (Android signing)
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+*.cer
+*.crt
+key.properties
+
+# Codemagic and CI secrets
+.codemagic-secrets.yaml
+.codemagic.env
+.codemagic.*.env
+.codemagic.yaml  # (Optional, if you include API keys or secrets here)
+
+# GitHub or other tokens
+*.token
+*.credentials
+*.auth
+
+# Secret credentials in scripts or files
+credentials.json
+service_account.json
+google_play_key.json
+
+# Apple-specific
+ios/Runner/embedded.mobileprovision
+ios/Runner/Runner.entitlements
+
